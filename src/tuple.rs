@@ -1,4 +1,5 @@
 use super::float;
+use std::ops;
 
 #[derive(Debug)]
 struct Tuple {
@@ -40,6 +41,13 @@ impl PartialEq for Tuple {
 }
 impl Eq for Tuple {}
 
+impl ops::Add<Tuple> for Tuple {
+  type Output = Tuple;
+  fn add(self, other: Tuple) -> Tuple {
+    Tuple::new(self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w)
+  }
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -64,5 +72,29 @@ mod tests {
     let b = Tuple::vector(1.0, 2.0, 3.0);
     assert!(a == b);
     assert!(b == a);
+  }
+
+  #[test]
+  fn test_add_point_vector() {
+    let p = Tuple::point(3.0, -2.0, 5.0);
+    let v = Tuple::vector(-2.0, 3.0, 1.0);
+    let result = Tuple::point(1.0, 1.0, 6.0);
+    assert!(p + v == result);
+  }
+
+  #[test]
+  fn test_add_vector_point() {
+    let v = Tuple::vector(3.0, -2.0, 5.0);
+    let p = Tuple::point(-2.0, 3.0, 1.0);
+    let result = Tuple::point(1.0, 1.0, 6.0);
+    assert!(p + v == result);
+  }
+
+  #[test]
+  fn test_add_vector_vector() {
+    let v1 = Tuple::vector(3.0, -2.0, 5.0);
+    let v2 = Tuple::vector(-2.0, 3.0, 1.0);
+    let result = Tuple::vector(1.0, 1.0, 6.0);
+    assert!(v1 + v2 == result);
   }
 }
