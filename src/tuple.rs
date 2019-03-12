@@ -1,3 +1,5 @@
+use super::float;
+
 #[derive(Debug)]
 struct Tuple {
   x: f32,
@@ -11,12 +13,20 @@ impl Tuple {
     Tuple { x, y, z, w }
   }
 
+  fn point(x: f32, y: f32, z: f32) -> Tuple {
+    Tuple::new(x, y, z, 1.0)
+  }
+
+  fn vector(x: f32, y: f32, z: f32) -> Tuple {
+    Tuple::new(x, y, z, 0.0)
+  }
+
   fn is_point(&self) -> bool {
-    self.w == 1.0
+    float::eq(self.w, 1.0)
   }
 
   fn is_vector(&self) -> bool {
-    self.w == 0.0
+    float::eq(self.w, 0.0)
   }
 }
 
@@ -26,14 +36,14 @@ mod tests {
 
   #[test]
   fn test_is_point() {
-    let p = Tuple::new(0.0, 0.0, 0.0, 1.0);
+    let p = Tuple::point(0.0, 0.0, 0.0);
     assert!(p.is_point());
     assert!(!p.is_vector());
   }
 
   #[test]
   fn test_is_vector() {
-    let v = Tuple::new(0.0, 0.0, 0.0, 0.0);
+    let v = Tuple::vector(0.0, 0.0, 0.0);
     assert!(v.is_vector());
     assert!(!v.is_point());
   }
