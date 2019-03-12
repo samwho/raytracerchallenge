@@ -48,6 +48,13 @@ impl ops::Add<Tuple> for Tuple {
   }
 }
 
+impl ops::Sub<Tuple> for Tuple {
+  type Output = Tuple;
+  fn sub(self, other: Tuple) -> Tuple {
+    Tuple::new(self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w)
+  }
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -96,5 +103,29 @@ mod tests {
     let v2 = Tuple::vector(-2.0, 3.0, 1.0);
     let result = Tuple::vector(1.0, 1.0, 6.0);
     assert!(v1 + v2 == result);
+  }
+
+  #[test]
+  fn test_sub_point_point() {
+    let p1 = Tuple::point(3.0, 2.0, 1.0);
+    let p2 = Tuple::point(5.0, 6.0, 7.0);
+    let result = Tuple::vector(-2.0, -4.0, -6.0);
+    assert!(p1 - p2 == result);
+  }
+
+  #[test]
+  fn test_sub_point_vector() {
+    let p = Tuple::point(3.0, 2.0, 1.0);
+    let v = Tuple::vector(5.0, 6.0, 7.0);
+    let result = Tuple::point(-2.0, -4.0, -6.0);
+    assert!(p - v == result);
+  }
+
+  #[test]
+  fn test_sub_vector_vector() {
+    let v1 = Tuple::vector(3.0, 2.0, 1.0);
+    let v2 = Tuple::vector(5.0, 6.0, 7.0);
+    let result = Tuple::vector(-2.0, -4.0, -6.0);
+    assert!(v1 - v2 == result);
   }
 }
