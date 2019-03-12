@@ -30,6 +30,16 @@ impl Tuple {
   }
 }
 
+impl PartialEq for Tuple {
+  fn eq(&self, other: &Tuple) -> bool {
+    float::eq(self.x, other.x)
+      && float::eq(self.y, other.y)
+      && float::eq(self.z, other.z)
+      && float::eq(self.w, other.w)
+  }
+}
+impl Eq for Tuple {}
+
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -46,5 +56,13 @@ mod tests {
     let v = Tuple::vector(0.0, 0.0, 0.0);
     assert!(v.is_vector());
     assert!(!v.is_point());
+  }
+
+  #[test]
+  fn test_eq() {
+    let a = Tuple::vector(1.0, 2.0, 3.0);
+    let b = Tuple::vector(1.0, 2.0, 3.0);
+    assert!(a == b);
+    assert!(b == a);
   }
 }
