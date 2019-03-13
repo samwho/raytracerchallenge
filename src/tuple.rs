@@ -57,6 +57,20 @@ impl ops::Sub<Tuple> for Tuple {
   }
 }
 
+impl ops::Mul<f32> for Tuple {
+  type Output = Tuple;
+  fn mul(self, other: f32) -> Tuple {
+    Tuple::new(self.x * other, self.y * other, self.z * other, self.w * other)
+  }
+}
+
+impl ops::Div<f32> for Tuple {
+  type Output = Tuple;
+  fn div(self, other: f32) -> Tuple {
+    Tuple::new(self.x / other, self.y / other, self.z / other, self.w / other)
+  }
+}
+
 impl ops::Neg for Tuple {
     type Output = Tuple;
 
@@ -144,5 +158,26 @@ mod tests {
     let t = Tuple::new(1.0, -2.0, 3.0, -4.0);
     let result = Tuple::new(-1.0, 2.0, -3.0, 4.0);
     assert!(-t == result);
+  }
+
+  #[test]
+  fn test_mul_scalar() {
+    let t = Tuple::new(1.0, -2.0, 3.0, -4.0);
+    let result = Tuple::new(3.5, -7.0, 10.5, -14.0);
+    assert!(t * 3.5 == result);
+  }
+
+  #[test]
+  fn test_mul_scalar_fraction() {
+    let t = Tuple::new(1.0, -2.0, 3.0, -4.0);
+    let result = Tuple::new(0.5, -1.0, 1.5, -2.0);
+    assert!(t * 0.5 == result);
+  }
+
+  #[test]
+  fn test_div_scalar() {
+    let t = Tuple::new(1.0, -2.0, 3.0, -4.0);
+    let result = Tuple::new(0.5, -1.0, 1.5, -2.0);
+    assert!(t / 2.0 == result);
   }
 }
