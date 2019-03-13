@@ -9,6 +9,8 @@ struct Tuple {
   w: f32,
 }
 
+const ZERO_VECTOR: Tuple = Tuple { x: 0.0, y: 0.0, z: 0.0, w: 0.0 };
+
 impl Tuple {
   fn new(x: f32, y: f32, z: f32, w: f32) -> Tuple {
     Tuple { x, y, z, w }
@@ -53,6 +55,14 @@ impl ops::Sub<Tuple> for Tuple {
   fn sub(self, other: Tuple) -> Tuple {
     Tuple::new(self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w)
   }
+}
+
+impl ops::Neg for Tuple {
+    type Output = Tuple;
+
+    fn neg(self) -> Tuple {
+      ZERO_VECTOR - self
+    }
 }
 
 #[cfg(test)]
@@ -127,5 +137,12 @@ mod tests {
     let v2 = Tuple::vector(5.0, 6.0, 7.0);
     let result = Tuple::vector(-2.0, -4.0, -6.0);
     assert!(v1 - v2 == result);
+  }
+
+  #[test]
+  fn test_negate() {
+    let t = Tuple::new(1.0, -2.0, 3.0, -4.0);
+    let result = Tuple::new(-1.0, 2.0, -3.0, 4.0);
+    assert!(-t == result);
   }
 }
