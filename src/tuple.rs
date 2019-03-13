@@ -35,6 +35,11 @@ impl Tuple {
   fn magnitude(&self) -> f32 {
     (self.x.powi(2) + self.y.powi(2) + self.z.powi(2) + self.w.powi(2)).sqrt()
   }
+
+  fn normalize(&self) -> Tuple {
+    let m = self.magnitude();
+    Tuple::new(self.x / m, self.y / m, self.z / m, self.w / m )
+  }
 }
 
 impl PartialEq for Tuple {
@@ -192,5 +197,12 @@ mod tests {
     assert!(float::eq(Tuple::vector(0.0, 0.0, 1.0).magnitude(), 1.0));
     assert!(float::eq(Tuple::vector(1.0, 2.0, 3.0).magnitude(), (14.0 as f32).sqrt()));
     assert!(float::eq(Tuple::vector(-1.0, -2.0, -3.0).magnitude(), (14.0 as f32).sqrt()));
+  }
+
+  #[test]
+  fn test_normalize() {
+    assert!(Tuple::vector(4.0, 0.0, 0.0).normalize() == Tuple::vector(1.0, 0.0, 0.0));
+    assert!(Tuple::vector(1.0, 2.0, 3.0).normalize() == Tuple::vector(0.26726, 0.53452, 0.80178));
+    assert!(float::eq(Tuple::vector(1.0, 2.0, 3.0).normalize().magnitude(), 1.0));
   }
 }
