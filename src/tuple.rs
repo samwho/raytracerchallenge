@@ -2,7 +2,7 @@ use super::float;
 use std::ops;
 
 #[derive(Debug, Copy, Clone)]
-struct Tuple {
+pub struct Tuple {
   x: f32,
   y: f32,
   z: f32,
@@ -12,36 +12,52 @@ struct Tuple {
 const ZERO_VECTOR: Tuple = Tuple { x: 0.0, y: 0.0, z: 0.0, w: 0.0 };
 
 impl Tuple {
-  fn new(x: f32, y: f32, z: f32, w: f32) -> Tuple {
+  pub fn new(x: f32, y: f32, z: f32, w: f32) -> Tuple {
     Tuple { x, y, z, w }
   }
 
-  fn point(x: f32, y: f32, z: f32) -> Tuple {
+  pub fn point(x: f32, y: f32, z: f32) -> Tuple {
     Tuple::new(x, y, z, 1.0)
   }
 
-  fn vector(x: f32, y: f32, z: f32) -> Tuple {
+  pub fn vector(x: f32, y: f32, z: f32) -> Tuple {
     Tuple::new(x, y, z, 0.0)
   }
 
-  fn is_point(&self) -> bool {
+  pub fn x(&self) -> f32 {
+    self.x
+  }
+
+  pub fn y(&self) -> f32 {
+    self.y
+  }
+
+  pub fn z(&self) -> f32 {
+    self.z
+  }
+
+  pub fn w(&self) -> f32 {
+    self.w
+  }
+
+  pub fn is_point(&self) -> bool {
     float::eq(self.w, 1.0)
   }
 
-  fn is_vector(&self) -> bool {
+  pub fn is_vector(&self) -> bool {
     float::eq(self.w, 0.0)
   }
 
-  fn magnitude(&self) -> f32 {
+  pub fn magnitude(&self) -> f32 {
     (self.x.powi(2) + self.y.powi(2) + self.z.powi(2) + self.w.powi(2)).sqrt()
   }
 
-  fn normalize(&self) -> Tuple {
+  pub fn normalize(&self) -> Tuple {
     let m = self.magnitude();
     Tuple::new(self.x / m, self.y / m, self.z / m, self.w / m )
   }
 
-  fn dot(&self, other: Tuple) -> f32 {
+  pub fn dot(&self, other: Tuple) -> f32 {
     self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
   }
 }
