@@ -1,10 +1,24 @@
 use super::color::Color;
+use std::ops::{Index, IndexMut};
 
 #[derive(Debug)]
 pub struct Canvas {
   width: usize,
   height: usize,
   cells: Vec<Color>,
+}
+
+impl Index<(usize, usize)> for Canvas {
+  type Output = Color;
+  fn index(&self, idx: (usize, usize)) -> &Color {
+    &self.cells[idx.1 * self.height + idx.0]
+  }
+}
+
+impl IndexMut<(usize, usize)> for Canvas {
+  fn index_mut(&mut self, idx: (usize, usize)) -> &mut Color {
+    &mut self.cells[idx.1 * self.height + idx.0]
+  }
 }
 
 impl Canvas {
@@ -15,14 +29,6 @@ impl Canvas {
     }
 
     Canvas { height, width, cells }
-  }
-
-  pub fn set(&mut self, x: usize, y: usize, color: Color) {
-    self.cells[y * self.height + x] = color
-  }
-
-  pub fn get(&self, x: usize, y: usize) -> Color {
-    self.cells[y * self.height + x]
   }
 
   pub fn is_in_bounds(&self, x: usize, y: usize) -> bool {
@@ -42,7 +48,7 @@ impl Canvas {
       let mut pixels: Vec<String> = Vec::with_capacity(self.width);
 
       for x in 0..self.width {
-        let pixel = self.get(x, y);
+        let pixel = self[(x, y)];
         pixels.push(format!("{} {} {}", pixel.red_u8(), pixel.green_u8(), pixel.blue_u8()));
       }
 
@@ -62,7 +68,7 @@ mod tests {
     let canvas = Canvas::new(10, 10);
     for x in 0..10 {
       for y in 0..10 {
-        assert_eq!(canvas.get(x, y), Color::new(0.0, 0.0, 0.0));
+        assert_eq!(canvas[(x, y)], Color::new(0.0, 0.0, 0.0));
       }
     }
   }
@@ -70,21 +76,21 @@ mod tests {
   #[test]
   fn test_set() {
     let mut canvas = Canvas::new(10, 10);
-    canvas.set(0, 0, Color::new(1.0, 0.0, 0.0));
-    canvas.set(0, 1, Color::new(0.0, 1.0, 0.0));
-    canvas.set(1, 0, Color::new(0.0, 0.0, 1.0));
+    canvas[(0, 0)] = Color::new(1.0, 0.0, 0.0);
+    canvas[(0, 1)] = Color::new(0.0, 1.0, 0.0);
+    canvas[(1, 0)] = Color::new(0.0, 0.0, 1.0);
 
-    assert_eq!(canvas.get(0, 0), Color::new(1.0, 0.0, 0.0));
-    assert_eq!(canvas.get(0, 1), Color::new(0.0, 1.0, 0.0));
-    assert_eq!(canvas.get(1, 0), Color::new(0.0, 0.0, 1.0));
+    assert_eq!(canvas[(0, 0)], Color::new(1.0, 0.0, 0.0));
+    assert_eq!(canvas[(0, 1)], Color::new(0.0, 1.0, 0.0));
+    assert_eq!(canvas[(1, 0)], Color::new(0.0, 0.0, 1.0));
   }
 
   #[test]
   fn test_to_ppm() {
     let mut canvas = Canvas::new(5, 3);
-    canvas.set(0, 0, Color::new(1.5, 0.0, 0.0));
-    canvas.set(2, 1, Color::new(0.0, 0.5, 0.0));
-    canvas.set(4, 2, Color::new(-0.5, 0.0, 1.0));
+    canvas[(0, 0)] = Color::new(1.5, 0.0, 0.0);
+    canvas[(2, 1)] = Color::new(0.0, 0.5, 0.0);
+    canvas[(4, 2)] = Color::new(-0.5, 0.0, 1.0);
 
     let ppm = canvas.to_ppm();
     let lines: Vec<&str> = ppm.lines().collect();

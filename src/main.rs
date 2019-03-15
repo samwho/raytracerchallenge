@@ -2,6 +2,7 @@ mod tuple;
 mod float;
 mod color;
 mod canvas;
+mod matrix;
 
 use tuple::Tuple;
 use canvas::Canvas;
@@ -50,7 +51,7 @@ fn main() -> std::io::Result<()> {
         if !canvas.is_in_bounds(x, y) {
             continue;
         }
-        canvas.set(x, y, Color::new(1.0, 1.0, 1.0));
+        canvas[(x, y)] = Color::new(1.0, 1.0, 1.0);
     }
 
     println!("writing file...");
