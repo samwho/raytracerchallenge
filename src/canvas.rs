@@ -99,6 +99,9 @@ mod tests {
     assert_eq!(lines[3], "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0");
     assert_eq!(lines[4], "0 0 0 0 0 0 0 128 0 0 0 0 0 0 0");
     assert_eq!(lines[5], "0 0 0 0 0 0 0 0 0 0 0 0 0 0 255");
+
+    let last_char = ppm.chars().last().unwrap();
+    assert_eq!(last_char, '\n');
   }
 
   #[test]
