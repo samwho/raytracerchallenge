@@ -1,40 +1,37 @@
-use textwrap::fill;
-
 use super::color::Color;
 
-struct Canvas {
+#[derive(Debug)]
+pub struct Canvas {
   width: usize,
   height: usize,
-  cells: Vec<Vec<Color>>,
+  cells: Vec<Color>,
 }
 
 impl Canvas {
-  fn new(width: usize, height: usize) -> Canvas {
-    let mut cells = Vec::with_capacity(width);
-    for _ in 0..width {
-      cells.push(Vec::with_capacity(height));
-    }
-
-    for x in 0..width {
-      for _ in 0..height {
-        cells[x].push(Color::new(0.0, 0.0, 0.0));
-      }
+  pub fn new(width: usize, height: usize) -> Canvas {
+    let mut cells = Vec::with_capacity(width * height);
+    for _ in 0..(width * height) {
+      cells.push(Color::new(0.0, 0.0, 0.0));
     }
 
     Canvas { height, width, cells }
   }
 
-  fn set(&mut self, x: usize, y: usize, color: Color) {
-    self.cells[x][y] = color
+  pub fn set(&mut self, x: usize, y: usize, color: Color) {
+    self.cells[y * self.height + x] = color
   }
 
-  fn get(&self, x: usize, y: usize) -> Color {
-    self.cells[x][y]
+  pub fn get(&self, x: usize, y: usize) -> Color {
+    self.cells[y * self.height + x]
   }
 
-  fn to_ppm(&self) -> String {
-    let mut s = String::with_capacity(self.width * self.height + 64);
-    s.push_str("P3M\n");
+  pub fn is_in_bounds(&self, x: usize, y: usize) -> bool {
+    x < self.width && y < self.height
+  }
+
+  pub fn to_ppm(&self) -> String {
+    let mut s = String::with_capacity(self.width * self.height * 12 + 64);
+    s.push_str("P3\n");
     s.push_str(&self.width.to_string());
     s.push_str(" ");
     s.push_str(&self.height.to_string());
@@ -49,7 +46,7 @@ impl Canvas {
         pixels.push(format!("{} {} {}", pixel.red_u8(), pixel.green_u8(), pixel.blue_u8()));
       }
 
-      s.push_str(&format!("{}\n", fill(&pixels.join(" "), 70)));
+      s.push_str(&format!("{}\n", &pixels.join(" ")));
     }
 
     s
@@ -92,7 +89,7 @@ mod tests {
     let ppm = canvas.to_ppm();
     let lines: Vec<&str> = ppm.lines().collect();
 
-    assert_eq!(lines[0], "P3M");
+    assert_eq!(lines[0], "P3");
     assert_eq!(lines[1], "5 3");
     assert_eq!(lines[2], "255");
 
@@ -103,6 +100,10 @@ mod tests {
     let last_char = ppm.chars().last().unwrap();
     assert_eq!(last_char, '\n');
   }
+
+  /*
+  The book recommends having this test, but feh reads the image file just file and wrapping
+  the lines was very slow, so I got rid of it.
 
   #[test]
   fn test_to_ppm_long_lines() {
@@ -121,4 +122,5 @@ mod tests {
     assert_eq!(lines[5], "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204");
     assert_eq!(lines[6], "153 255 204 153 255 204 153 255 204 153 255 204 153");
   }
+  */
 }

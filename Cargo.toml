@@ -5,4 +5,3 @@ authors = ["Sam <samwho@lbak.co.uk>"]
 edition = "2018"
 
 [dependencies]
-textwrap = "0.11"
