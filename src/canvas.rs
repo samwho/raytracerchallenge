@@ -39,6 +39,30 @@ impl Canvas {
     s.push_str("\n");
     s.push_str("255\n");
 
+    for y in 0..self.height {
+      let mut chars = 0;
+      for x in 0..self.width {
+        let ppm = self.get(x, y).to_ppm();
+        if chars + ppm.len() > 70 {
+          s.push_str("\n");
+          chars = 0;
+        }
+
+        s.push_str(&ppm);
+        chars += ppm.len();
+
+        if x != self.width - 1 && chars + 1 <= 70 {
+          s.push_str(" ");
+          chars += 1;
+        } else {
+          s.push_str("\n");
+          chars = 0;
+        }
+      }
+
+      s.push_str("\n");
+    }
+
     s
   }
 }
@@ -70,13 +94,39 @@ mod tests {
   }
 
   #[test]
-  fn test_to_ppm_header() {
-    let canvas = Canvas::new(10, 10);
+  fn test_to_ppm() {
+    let mut canvas = Canvas::new(5, 3);
+    canvas.set(0, 0, Color::new(1.5, 0.0, 0.0));
+    canvas.set(2, 1, Color::new(0.0, 0.5, 0.0));
+    canvas.set(4, 2, Color::new(-0.5, 0.0, 1.0));
+
     let ppm = canvas.to_ppm();
     let lines: Vec<&str> = ppm.lines().collect();
 
     assert_eq!(lines[0], "P3M");
-    assert_eq!(lines[1], "10 10");
+    assert_eq!(lines[1], "5 3");
     assert_eq!(lines[2], "255");
+
+    assert_eq!(lines[3], "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0");
+    assert_eq!(lines[4], "0 0 0 0 0 0 0 128 0 0 0 0 0 0 0");
+    assert_eq!(lines[5], "0 0 0 0 0 0 0 0 0 0 0 0 0 0 255");
+  }
+
+  #[test]
+  fn test_to_ppm_long_lines() {
+    let mut canvas = Canvas::new(10, 2);
+    for x in 0..10 {
+      for y in 0..2 {
+        canvas.set(x, y, Color::new(1.0, 0.8, 0.6));
+      }
+    }
+
+    let ppm = canvas.to_ppm();
+    let lines: Vec<&str> = ppm.lines().collect();
+
+    assert_eq!(lines[3], "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204");
+    assert_eq!(lines[4], "153 255 204 153 255 204 153 255 204 153 255 204 153");
+    assert_eq!(lines[5], "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204");
+    assert_eq!(lines[6], "153 255 204 153 255 204 153 255 204 153 255 204 153");
   }
 }

@@ -12,6 +12,21 @@ impl Color {
   pub fn new(red: f32, green: f32, blue: f32) -> Color {
     Color { red, green, blue }
   }
+
+  pub fn to_ppm(&self) -> String {
+    format!("{} {} {}", Color::to_u8(self.red), Color::to_u8(self.green), Color::to_u8(self.blue))
+  }
+
+  fn to_u8(n: f32) -> u8 {
+    let r = n * 255.0;
+    if r > 255.0 {
+      return 255;
+    } else if r <= 0.0 {
+      return 0;
+    } else {
+      return r.round() as u8;
+    }
+  }
 }
 
 impl PartialEq for Color {
@@ -92,5 +107,11 @@ mod tests {
     let b = Color::new(0.9, 1.0, 0.1);
     let result = Color::new(0.9, 0.2, 0.04);
     assert!(a * b == result);
+  }
+
+  #[test]
+  fn test_to_ppm() {
+    let c = Color::new(1.0, 2.0, 0.5);
+    assert_eq!(c.to_ppm(), "255 255 128");
   }
 }
