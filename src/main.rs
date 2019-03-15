@@ -1,6 +1,7 @@
 mod tuple;
 mod float;
 mod color;
+mod canvas;
 
 use tuple::Tuple;
 
