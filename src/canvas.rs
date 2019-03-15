@@ -1,4 +1,6 @@
-use super::color::{Color};
+use textwrap::fill;
+
+use super::color::Color;
 
 struct Canvas {
   width: usize,
@@ -40,27 +42,14 @@ impl Canvas {
     s.push_str("255\n");
 
     for y in 0..self.height {
-      let mut chars = 0;
+      let mut pixels: Vec<String> = Vec::with_capacity(self.width);
+
       for x in 0..self.width {
-        let ppm = self.get(x, y).to_ppm();
-        if chars + ppm.len() > 70 {
-          s.push_str("\n");
-          chars = 0;
-        }
-
-        s.push_str(&ppm);
-        chars += ppm.len();
-
-        if x != self.width - 1 && chars + 1 <= 70 {
-          s.push_str(" ");
-          chars += 1;
-        } else {
-          s.push_str("\n");
-          chars = 0;
-        }
+        let pixel = self.get(x, y);
+        pixels.push(format!("{} {} {}", pixel.red_u8(), pixel.green_u8(), pixel.blue_u8()));
       }
 
-      s.push_str("\n");
+      s.push_str(&format!("{}\n", fill(&pixels.join(" "), 70)));
     }
 
     s

@@ -13,8 +13,28 @@ impl Color {
     Color { red, green, blue }
   }
 
-  pub fn to_ppm(&self) -> String {
-    format!("{} {} {}", Color::to_u8(self.red), Color::to_u8(self.green), Color::to_u8(self.blue))
+  pub fn red(&self) -> f32 {
+    self.red
+  }
+
+  pub fn green(&self) -> f32 {
+    self.green
+  }
+
+  pub fn blue(&self) -> f32 {
+    self.blue
+  }
+
+  pub fn red_u8(&self) -> u8 {
+    Color::to_u8(self.red)
+  }
+
+  pub fn green_u8(&self) -> u8 {
+    Color::to_u8(self.green)
+  }
+
+  pub fn blue_u8(&self) -> u8 {
+    Color::to_u8(self.blue)
   }
 
   fn to_u8(n: f32) -> u8 {
@@ -110,8 +130,10 @@ mod tests {
   }
 
   #[test]
-  fn test_to_ppm() {
-    let c = Color::new(1.0, 2.0, 0.5);
-    assert_eq!(c.to_ppm(), "255 255 128");
+  fn test_u8_getters() {
+    let c = Color::new(-1.0, 2.0, 0.5);
+    assert_eq!(c.red_u8(), 0);
+    assert_eq!(c.green_u8(), 255);
+    assert_eq!(c.blue_u8(), 128);
   }
 }

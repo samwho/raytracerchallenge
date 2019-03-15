@@ -1,3 +1,5 @@
+extern crate textwrap;
+
 mod tuple;
 mod float;
 mod color;
