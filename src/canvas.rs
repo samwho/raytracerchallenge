@@ -1,7 +1,9 @@
 use super::color::{Color};
 
 struct Canvas {
-  cells: Vec<Vec<Color>>
+  width: usize,
+  height: usize,
+  cells: Vec<Vec<Color>>,
 }
 
 impl Canvas {
@@ -17,7 +19,7 @@ impl Canvas {
       }
     }
 
-    Canvas { cells }
+    Canvas { height, width, cells }
   }
 
   fn set(&mut self, x: usize, y: usize, color: Color) {
@@ -26,6 +28,18 @@ impl Canvas {
 
   fn get(&self, x: usize, y: usize) -> Color {
     self.cells[x][y]
+  }
+
+  fn to_ppm(&self) -> String {
+    let mut s = String::with_capacity(self.width * self.height + 64);
+    s.push_str("P3M\n");
+    s.push_str(&self.width.to_string());
+    s.push_str(" ");
+    s.push_str(&self.height.to_string());
+    s.push_str("\n");
+    s.push_str("255\n");
+
+    s
   }
 }
 
@@ -53,5 +67,16 @@ mod tests {
     assert_eq!(canvas.get(0, 0), Color::new(1.0, 0.0, 0.0));
     assert_eq!(canvas.get(0, 1), Color::new(0.0, 1.0, 0.0));
     assert_eq!(canvas.get(1, 0), Color::new(0.0, 0.0, 1.0));
+  }
+
+  #[test]
+  fn test_to_ppm_header() {
+    let canvas = Canvas::new(10, 10);
+    let ppm = canvas.to_ppm();
+    let lines: Vec<&str> = ppm.lines().collect();
+
+    assert_eq!(lines[0], "P3M");
+    assert_eq!(lines[1], "10 10");
+    assert_eq!(lines[2], "255");
   }
 }
