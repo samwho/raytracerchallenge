@@ -1,5 +1,6 @@
 mod tuple;
 mod float;
+mod color;
 
 use tuple::Tuple;
 

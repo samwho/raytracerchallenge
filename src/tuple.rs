@@ -70,7 +70,7 @@ impl PartialEq for Tuple {
       && float::eq(self.w, other.w)
   }
 }
-impl Eq for &Tuple {}
+impl Eq for Tuple {}
 
 impl ops::Add<Tuple> for Tuple {
   type Output = Tuple;
