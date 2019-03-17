@@ -131,7 +131,7 @@ impl fmt::Display for Mat4 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
           f,
-          "[{}, {}, {}, {},\n {}, {}, {}, {},\n {}, {}, {}, {},\n {}, {}, {}, {}]",
+          "[{:.2}, {:.2}, {:.2}, {:.2},\n {:.2}, {:.2}, {:.2}, {:.2},\n {:.2}, {:.2}, {:.2}, {:.2},\n {:.2}, {:.2}, {:.2}, {:.2}]",
           self.matrix[0], self.matrix[1], self.matrix[2], self.matrix[3],
           self.matrix[4], self.matrix[5], self.matrix[6], self.matrix[7],
           self.matrix[8], self.matrix[9], self.matrix[10], self.matrix[11],
@@ -142,6 +142,15 @@ impl fmt::Display for Mat4 {
 impl Mat4 {
   pub fn new(matrix: [f32; 16]) -> Mat4 {
     Mat4 { matrix }
+  }
+
+  pub fn translation(x: f32, y: f32, z: f32) -> Mat4 {
+    Mat4 { matrix: [
+      1.0, 0.0, 0.0, x,
+      0.0, 1.0, 0.0, y,
+      0.0, 0.0, 1.0, z,
+      0.0, 0.0, 0.0, 1.0,
+    ] }
   }
 
   pub fn identity() -> Mat4 {
@@ -715,5 +724,31 @@ mod tests {
     let c = a * b;
 
     assert_eq!(c * b.inverse(), a);
+  }
+
+  #[test]
+  fn test_mat4_translation() {
+    let t = Mat4::translation(5.0, -3.0, 2.0);
+    let p = Tuple::point(-3.0, 4.0, 5.0);
+    let r = Tuple::point(2.0, 1.0, 7.0);
+
+    assert_eq!(t * p, r);
+  }
+
+  #[test]
+  fn test_mat4_translation_inverse() {
+    let t = Mat4::translation(5.0, -3.0, 2.0);
+    let p = Tuple::point(-3.0, 4.0, 5.0);
+    let r = Tuple::point(-8.0, 7.0, 3.0);
+
+    assert_eq!(t.inverse() * p, r);
+  }
+
+  #[test]
+  fn test_mat4_translation_against_vector() {
+    let t = Mat4::translation(5.0, -3.0, 2.0);
+    let v = Tuple::vector(-3.0, 4.0, 5.0);
+
+    assert_eq!(t * v, v);
   }
 }
