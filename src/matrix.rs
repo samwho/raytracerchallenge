@@ -148,17 +148,107 @@ impl Mat4 {
       self.matrix[3], self.matrix[7], self.matrix[11], self.matrix[15],
     ])
   }
+
+  pub fn submatrix(&self, row: usize, col: usize) -> Mat3 {
+    let mut m3 = [0.0; 9];
+    let mut idx = 0;
+
+    for i in 0..4 {
+      if i == row {
+        continue;
+      }
+
+      for j in 0..4 {
+        if j == col {
+          continue;
+        }
+
+        m3[idx] = self[(i, j)];
+
+        idx += 1;
+      }
+    }
+
+    Mat3::new(m3)
+  }
+
+  pub fn minor(&self, row: usize, col: usize) -> f32 {
+    self.submatrix(row, col).determinant()
+  }
+
+  pub fn cofactor(&self, row: usize, col: usize) -> f32 {
+    if (row + col) % 2 == 0 {
+      self.minor(row, col)
+    } else {
+      -self.minor(row, col)
+    }
+  }
+
+  pub fn determinant(&self) -> f32 {
+    let mut total = 0.0;
+    for idx in 0..4 {
+      total += self[(0, idx)] * self.cofactor(0, idx);
+    }
+    total
+  }
 }
 
 impl Mat3 {
   pub fn new(matrix: [f32; 9]) -> Mat3 {
     Mat3 { matrix }
   }
+
+  pub fn submatrix(&self, row: usize, col: usize) -> Mat2 {
+    let mut m2 = [0.0; 4];
+    let mut idx = 0;
+
+    for i in 0..3 {
+      if i == row {
+        continue;
+      }
+
+      for j in 0..3 {
+        if j == col {
+          continue;
+        }
+
+        m2[idx] = self[(i, j)];
+
+        idx += 1;
+      }
+    }
+
+    Mat2::new(m2)
+  }
+
+  pub fn minor(&self, row: usize, col: usize) -> f32 {
+    self.submatrix(row, col).determinant()
+  }
+
+  pub fn cofactor(&self, row: usize, col: usize) -> f32 {
+    if (row + col) % 2 == 0 {
+      self.minor(row, col)
+    } else {
+      -self.minor(row, col)
+    }
+  }
+
+  pub fn determinant(&self) -> f32 {
+    let mut total = 0.0;
+    for idx in 0..3 {
+      total += self[(0, idx)] * self.cofactor(0, idx);
+    }
+    total
+  }
 }
 
 impl Mat2 {
   pub fn new(matrix: [f32; 4]) -> Mat2 {
     Mat2 { matrix }
+  }
+
+  pub fn determinant(&self) -> f32 {
+    self.matrix[0] * self.matrix[3] - self.matrix[1] * self.matrix[2]
   }
 }
 
@@ -395,5 +485,96 @@ mod tests {
   #[test]
   fn test_mat4_identity_transpose() {
     assert_eq!(Mat4::identity().transpose(), Mat4::identity());
+  }
+
+  #[test]
+  fn test_mat2_determinant() {
+    assert!(float::eq(Mat2::new([1.0, 5.0, -3.0, 2.0]).determinant(), 17.0));
+  }
+
+  #[test]
+  fn test_mat4_submatrix() {
+    let a = Mat4::new([
+      -6.0, 1.0, 1.0, 6.0,
+      -8.0, 5.0, 8.0, 6.0,
+      -1.0, 0.0, 8.0, 2.0,
+      -7.0, 1.0, -1.0, 1.0,
+    ]);
+
+    let result = Mat3::new([
+      -6.0, 1.0, 6.0,
+      -8.0, 8.0, 6.0,
+      -7.0, -1.0, 1.0,
+    ]);
+
+    assert_eq!(a.submatrix(2, 1), result);
+  }
+
+  #[test]
+  fn test_mat3_submatrix() {
+    let a = Mat3::new([
+      1.0, 5.0, 0.0,
+      -3.0, 2.0, 7.0,
+      0.0, 6.0, -3.0,
+    ]);
+
+    let result = Mat2::new([
+      -3.0, 2.0,
+      0.0, 6.0,
+    ]);
+
+    assert_eq!(a.submatrix(0, 2), result);
+  }
+
+  #[test]
+  fn test_mat3_minor() {
+    let a = Mat3::new([
+      3.0, 5.0, 0.0,
+      2.0, -1.0, -7.0,
+      6.0, -1.0, 5.0,
+    ]);
+
+    assert!(float::eq(a.minor(1, 0), 25.0));
+  }
+
+  #[test]
+  fn test_mat3_cofactor() {
+    let a = Mat3::new([
+      3.0, 5.0, 0.0,
+      2.0, -1.0, -7.0,
+      6.0, -1.0, 5.0,
+    ]);
+
+    assert!(float::eq(a.cofactor(1, 0), -25.0));
+  }
+
+  #[test]
+  fn test_mat3_determinant() {
+    let a = Mat3::new([
+      1.0, 2.0, 6.0,
+      -5.0, 8.0, -4.0,
+      2.0, 6.0, 4.0,
+    ]);
+
+    assert!(float::eq(a.cofactor(0, 0), 56.0));
+    assert!(float::eq(a.cofactor(0, 1), 12.0));
+    assert!(float::eq(a.cofactor(0, 2), -46.0));
+    assert!(float::eq(a.determinant(), -196.0));
+  }
+
+  #[test]
+  fn test_mat4_determinant() {
+    let a = Mat4::new([
+      -2.0, -8.0, 3.0, 5.0,
+      -3.0, 1.0, 7.0, 3.0,
+      1.0, 2.0, -9.0, 6.0,
+      -6.0, 7.0, 7.0, -9.0,
+    ]);
+
+    assert!(float::eq(a.cofactor(0, 0), 690.0));
+    assert!(float::eq(a.cofactor(0, 1), 447.0));
+    assert!(float::eq(a.cofactor(0, 2), 210.0));
+    assert!(float::eq(a.cofactor(0, 3), 51.0));
+    assert!(float::eq(a.determinant(), -4071.0));
   }
 }
