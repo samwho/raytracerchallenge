@@ -139,6 +139,15 @@ impl Mat4 {
       0.0, 0.0, 0.0, 1.0
     ])
   }
+
+  pub fn transpose(&self) -> Mat4 {
+    Mat4::new([
+      self.matrix[0], self.matrix[4], self.matrix[8], self.matrix[12],
+      self.matrix[1], self.matrix[5], self.matrix[9], self.matrix[13],
+      self.matrix[2], self.matrix[6], self.matrix[10], self.matrix[14],
+      self.matrix[3], self.matrix[7], self.matrix[11], self.matrix[15],
+    ])
+  }
 }
 
 impl Mat3 {
@@ -362,5 +371,29 @@ mod tests {
     let b = Mat4::identity();
 
     assert_eq!(a * b, a);
+  }
+
+  #[test]
+  fn test_mat4_transpose() {
+    let a = Mat4::new([
+      0.0, 9.0, 3.0, 0.0,
+      9.0, 8.0, 0.0, 8.0,
+      1.0, 8.0, 5.0, 3.0,
+      0.0, 0.0, 5.0, 8.0,
+    ]);
+
+    let result = Mat4::new([
+      0.0, 9.0, 1.0, 0.0,
+      9.0, 8.0, 8.0, 0.0,
+      3.0, 0.0, 5.0, 5.0,
+      0.0, 8.0, 3.0, 8.0,
+    ]);
+
+    assert_eq!(a.transpose(), result);
+  }
+
+  #[test]
+  fn test_mat4_identity_transpose() {
+    assert_eq!(Mat4::identity().transpose(), Mat4::identity());
   }
 }
