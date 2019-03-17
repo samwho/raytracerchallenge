@@ -1,4 +1,5 @@
 use std::ops::{Index, IndexMut};
+use std::fmt;
 use super::float;
 use super::tuple::Tuple;
 
@@ -126,6 +127,18 @@ impl std::ops::Mul<Tuple> for Mat4 {
   }
 }
 
+impl fmt::Display for Mat4 {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+          f,
+          "[{}, {}, {}, {},\n {}, {}, {}, {},\n {}, {}, {}, {},\n {}, {}, {}, {}]",
+          self.matrix[0], self.matrix[1], self.matrix[2], self.matrix[3],
+          self.matrix[4], self.matrix[5], self.matrix[6], self.matrix[7],
+          self.matrix[8], self.matrix[9], self.matrix[10], self.matrix[11],
+          self.matrix[12], self.matrix[13], self.matrix[14], self.matrix[15])
+    }
+}
+
 impl Mat4 {
   pub fn new(matrix: [f32; 16]) -> Mat4 {
     Mat4 { matrix }
@@ -164,7 +177,6 @@ impl Mat4 {
         }
 
         m3[idx] = self[(i, j)];
-
         idx += 1;
       }
     }
@@ -190,6 +202,22 @@ impl Mat4 {
       total += self[(0, idx)] * self.cofactor(0, idx);
     }
     total
+  }
+
+  pub fn is_invertible(&self) -> bool {
+    !float::eq(self.determinant(), 0.0)
+  }
+
+  pub fn inverse(&self) -> Mat4 {
+    let mut m4 = [0.0; 16];
+    let determinant = self.determinant();
+    for row in 0..4 {
+      for col in 0..4 {
+        let c = self.cofactor(row, col);
+        m4[col * 4 + row] = c / determinant;
+      }
+    }
+    Mat4::new(m4)
   }
 }
 
@@ -576,5 +604,116 @@ mod tests {
     assert!(float::eq(a.cofactor(0, 2), 210.0));
     assert!(float::eq(a.cofactor(0, 3), 51.0));
     assert!(float::eq(a.determinant(), -4071.0));
+  }
+
+  #[test]
+  fn test_mat4_is_invertible() {
+    let a = Mat4::new([
+      6.0, 4.0, 4.0, 4.0,
+      5.0, 5.0, 7.0, 6.0,
+      4.0, -9.0, 3.0, -7.0,
+      9.0, 1.0, 7.0, -6.0,
+    ]);
+
+    assert!(a.is_invertible())
+  }
+
+  #[test]
+  fn test_mat4_is_not_invertible() {
+    let a = Mat4::new([
+      -4.0, 2.0, -2.0, -3.0,
+      9.0, 6.0, 2.0, 6.0,
+      0.0, -5.0, 1.0, -5.0,
+      0.0, 0.0, 0.0, 0.0,
+    ]);
+
+    assert!(!a.is_invertible())
+  }
+
+  #[test]
+  fn test_mat4_inverse() {
+    let a = Mat4::new([
+      -5.0, 2.0, 6.0, -8.0,
+      1.0, -5.0, 1.0, 8.0,
+      7.0, 7.0, -6.0, -7.0,
+      1.0, -3.0, 7.0, 4.0,
+    ]);
+
+    let b = a.inverse();
+    let b_result = Mat4::new([
+      0.21805, 0.45113, 0.24060, -0.04511,
+      -0.80827, -1.45677, -0.44361, 0.52068,
+      -0.07895, -0.22368, -0.05263, 0.19737,
+      -0.52256, -0.81391, -0.30075, 0.30639,
+    ]);
+
+    assert!(float::eq(a.determinant(), 532.0));
+    assert!(float::eq(a.cofactor(2, 3), -160.0));
+    assert!(float::eq(b[(3, 2)], -160.0/532.0));
+    assert!(float::eq(a.cofactor(3, 2), 105.0));
+    assert!(float::eq(b[(2, 3)], 105.0/532.0));
+
+    assert_eq!(b, b_result);
+  }
+
+  #[test]
+  fn test_mat4_inverse_2() {
+    let a = Mat4::new([
+      8.0, -5.0, 9.0, 2.0,
+      7.0, 5.0, 6.0, 1.0,
+      -6.0, 0.0, 9.0, 6.0,
+      -3.0, 0.0, -9.0, -4.0,
+    ]);
+
+    let b = a.inverse();
+    let b_result = Mat4::new([
+      -0.15385, -0.15385, -0.28205, -0.53846,
+      -0.07692, 0.12308, 0.02564, 0.03077,
+      0.35897, 0.35897, 0.43590, 0.92308,
+      -0.69231, -0.69231, -0.76923, -1.92308,
+    ]);
+
+    assert_eq!(b, b_result);
+  }
+
+  #[test]
+  fn test_mat4_inverse_3() {
+    let a = Mat4::new([
+      9.0, 3.0, 0.0, 9.0,
+      -5.0, -2.0, -6.0, -3.0,
+      -4.0, 9.0, 6.0, 4.0,
+      -7.0, 6.0, 6.0, 2.0,
+    ]);
+
+    let b = a.inverse();
+    let b_result = Mat4::new([
+      -0.04074, -0.07778, 0.14444, -0.22222,
+      -0.07778, 0.03333, 0.36667, -0.33333,
+      -0.02901, -0.14630, -0.10926, 0.12963,
+      0.17778, 0.06667, -0.26667, 0.33333,
+    ]);
+
+    assert_eq!(b, b_result);
+  }
+
+  #[test]
+  fn test_mat4_product_inverse() {
+    let a = Mat4::new([
+      3.0, -9.0, 7.0, 3.0,
+      3.0, -8.0, 2.0, -9.0,
+      -4.0, 4.0, 4.0, 1.0,
+      -6.0, 5.0, -1.0, 1.0,
+    ]);
+
+    let b = Mat4::new([
+      8.0, 2.0, 2.0, 2.0,
+      3.0, -1.0, 7.0, 0.0,
+      7.0, 0.0, 5.0, 4.0,
+      6.0, -2.0, 0.0, 5.0,
+    ]);
+
+    let c = a * b;
+
+    assert_eq!(c * b.inverse(), a);
   }
 }
