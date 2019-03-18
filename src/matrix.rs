@@ -153,6 +153,15 @@ impl Mat4 {
     ] }
   }
 
+  pub fn scaling(x: f32, y: f32, z: f32) -> Mat4 {
+    Mat4 { matrix: [
+      x, 0.0, 0.0, 0.0,
+      0.0, y, 0.0, 0.0,
+      0.0, 0.0, z, 0.0,
+      0.0, 0.0, 0.0, 1.0,
+    ] }
+  }
+
   pub fn identity() -> Mat4 {
     Mat4::new([
       1.0, 0.0, 0.0, 0.0,
@@ -750,5 +759,41 @@ mod tests {
     let v = Tuple::vector(-3.0, 4.0, 5.0);
 
     assert_eq!(t * v, v);
+  }
+
+  #[test]
+  fn test_mat4_scaling() {
+    let t = Mat4::scaling(2.0, 3.0, 4.0);
+    let p = Tuple::point(-4.0, 6.0, 8.0);
+    let r = Tuple::point(-8.0, 18.0, 32.0);
+
+    assert_eq!(t * p, r);
+  }
+
+  #[test]
+  fn test_mat4_scaling_vector() {
+    let t = Mat4::scaling(2.0, 3.0, 4.0);
+    let p = Tuple::vector(-4.0, 6.0, 8.0);
+    let r = Tuple::vector(-8.0, 18.0, 32.0);
+
+    assert_eq!(t * p, r);
+  }
+
+  #[test]
+  fn test_mat4_scaling_vector_inverse() {
+    let t = Mat4::scaling(2.0, 3.0, 4.0);
+    let p = Tuple::vector(-4.0, 6.0, 8.0);
+    let r = Tuple::vector(-2.0, 2.0, 2.0);
+
+    assert_eq!(t.inverse() * p, r);
+  }
+
+  #[test]
+  fn test_mat4_scaling_reflection() {
+    let t = Mat4::scaling(-1.0, 1.0, 1.0);
+    let p = Tuple::vector(2.0, 3.0, 4.0);
+    let r = Tuple::vector(-2.0, 3.0, 4.0);
+
+    assert_eq!(t * p, r);
   }
 }
