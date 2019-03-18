@@ -162,6 +162,15 @@ impl Mat4 {
     ] }
   }
 
+  pub fn rotation_x(rad: f32) -> Mat4 {
+    Mat4 { matrix: [
+      1.0, 0.0, 0.0, 0.0,
+      0.0, rad.cos(), -rad.sin(), 0.0,
+      0.0, rad.sin(), rad.cos(), 0.0,
+      0.0, 0.0, 0.0, 1.0,
+    ] }
+  }
+
   pub fn identity() -> Mat4 {
     Mat4::new([
       1.0, 0.0, 0.0, 0.0,
@@ -795,5 +804,25 @@ mod tests {
     let r = Tuple::vector(-2.0, 3.0, 4.0);
 
     assert_eq!(t * p, r);
+  }
+
+  #[test]
+  fn test_mat4_rot_x() {
+    let p = Tuple::point(0.0, 1.0, 0.0);
+    let half_quarter = Mat4::rotation_x(std::f32::consts::PI / 4.0);
+    let full_quarter = Mat4::rotation_x(std::f32::consts::PI / 2.0);
+
+    assert_eq!(half_quarter * p, Tuple::point(0.0, 2.0_f32.sqrt() / 2.0, 2.0_f32.sqrt() / 2.0));
+    assert_eq!(full_quarter * p, Tuple::point(0.0, 0.0, 1.0));
+  }
+
+  #[test]
+  fn test_mat4_rot_x_inverse() {
+    let p = Tuple::point(0.0, 1.0, 0.0);
+    let half_quarter = Mat4::rotation_x(std::f32::consts::PI / 4.0);
+    let full_quarter = Mat4::rotation_x(std::f32::consts::PI / 2.0);
+
+    assert_eq!(half_quarter * p, Tuple::point(0.0, 2.0_f32.sqrt() / 2.0, 2.0_f32.sqrt() / 2.0));
+    assert_eq!(full_quarter * p, Tuple::point(0.0, 0.0, 1.0));
   }
 }
