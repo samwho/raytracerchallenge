@@ -255,6 +255,22 @@ impl Mat4 {
     }
     Mat4::new(m4)
   }
+
+  pub fn translate(&self, x: f32, y: f32, z: f32) -> Mat4 {
+    Mat4::translation(x, y, z) * *self
+  }
+
+  pub fn scale(&self, x: f32, y: f32, z: f32) -> Mat4 {
+    Mat4::scaling(x, y, z) * *self
+  }
+
+  pub fn rotate_x(&self, rad: f32) -> Mat4 {
+    Mat4::rotation_x(rad) * *self
+  }
+
+  pub fn shear(&self, xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Mat4 {
+    Mat4::shearing(xy, xz, yx, yz, zx, zy) * *self
+  }
 }
 
 impl Mat3 {
@@ -893,6 +909,18 @@ mod tests {
     assert_eq!(p4, Tuple::point(15.0, 0.0, 7.0));
 
     let chain = c * b * a;
+    assert_eq!(chain * p, Tuple::point(15.0, 0.0, 7.0));
+  }
+
+  #[test]
+  fn test_fluent_chained_transformations() {
+    let p = Tuple::point(1.0, 0.0, 1.0);
+    let chain =
+      Mat4::identity()
+        .rotate_x(std::f32::consts::PI / 2.0)
+        .scale(5.0, 5.0, 5.0)
+        .translate(10.0, 5.0, 7.0);
+
     assert_eq!(chain * p, Tuple::point(15.0, 0.0, 7.0));
   }
 }
