@@ -171,6 +171,24 @@ impl Mat4 {
     ] }
   }
 
+  pub fn rotation_y(rad: f32) -> Mat4 {
+    Mat4 { matrix: [
+      rad.cos(), 0.0, rad.sin(), 0.0,
+      0.0, 1.0, 0.0, 0.0,
+      -rad.sin(), 0.0, rad.cos(), 0.0,
+      0.0, 0.0, 0.0, 1.0,
+    ] }
+  }
+
+  pub fn rotation_z(rad: f32) -> Mat4 {
+    Mat4 { matrix: [
+      rad.cos(), -rad.sin(), 0.0, 0.0,
+      rad.sin(), rad.cos(), 0.0, 0.0,
+      0.0, 0.0, 1.0, 0.0,
+      0.0, 0.0, 0.0, 1.0,
+    ] }
+  }
+
   pub fn shearing(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Mat4 {
     Mat4 { matrix: [
       1.0, xy, xz, 0.0,
@@ -268,6 +286,14 @@ impl Mat4 {
     Mat4::rotation_x(rad) * *self
   }
 
+  pub fn rotate_y(&self, rad: f32) -> Mat4 {
+    Mat4::rotation_y(rad) * *self
+  }
+
+  pub fn rotate_z(&self, rad: f32) -> Mat4 {
+    Mat4::rotation_z(rad) * *self
+  }
+
   pub fn shear(&self, xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Mat4 {
     Mat4::shearing(xy, xz, yx, yz, zx, zy) * *self
   }
@@ -336,6 +362,7 @@ impl Mat2 {
 #[cfg(test)]
 mod tests {
   use super::*;
+  use std::f32::consts::{PI};
 
   #[test]
   fn test_mat4_new() {
@@ -834,18 +861,38 @@ mod tests {
   #[test]
   fn test_mat4_rot_x() {
     let p = Tuple::point(0.0, 1.0, 0.0);
-    let half_quarter = Mat4::rotation_x(std::f32::consts::PI / 4.0);
-    let full_quarter = Mat4::rotation_x(std::f32::consts::PI / 2.0);
+    let half_quarter = Mat4::rotation_x(PI / 4.0);
+    let full_quarter = Mat4::rotation_x(PI / 2.0);
 
-    assert_eq!(half_quarter * p, Tuple::point(0.0, 2.0_f32.sqrt() / 2.0, 2.0_f32.sqrt() / 2.0));
+    assert_eq!(half_quarter * p, Tuple::point(0.0, 2f32.sqrt() / 2.0, 2f32.sqrt() / 2.0));
     assert_eq!(full_quarter * p, Tuple::point(0.0, 0.0, 1.0));
+  }
+
+  #[test]
+  fn test_mat4_rot_y() {
+    let p = Tuple::point(0.0, 0.0, 1.0);
+    let half_quarter = Mat4::rotation_y(PI / 4.0);
+    let full_quarter = Mat4::rotation_y(PI / 2.0);
+
+    assert_eq!(half_quarter * p, Tuple::point(2f32.sqrt() / 2.0, 0.0, 2f32.sqrt() / 2.0));
+    assert_eq!(full_quarter * p, Tuple::point(1.0, 0.0, 0.0));
+  }
+
+  #[test]
+  fn test_mat4_rot_z() {
+    let p = Tuple::point(0.0, 1.0, 0.0);
+    let half_quarter = Mat4::rotation_z(PI / 4.0);
+    let full_quarter = Mat4::rotation_z(PI / 2.0);
+
+    assert_eq!(half_quarter * p, Tuple::point(-2f32.sqrt() / 2.0, 2f32.sqrt() / 2.0, 0.0));
+    assert_eq!(full_quarter * p, Tuple::point(-1.0, 0.0, 0.0));
   }
 
   #[test]
   fn test_mat4_rot_x_inverse() {
     let p = Tuple::point(0.0, 1.0, 0.0);
-    let half_quarter = Mat4::rotation_x(std::f32::consts::PI / 4.0);
-    let full_quarter = Mat4::rotation_x(std::f32::consts::PI / 2.0);
+    let half_quarter = Mat4::rotation_x(PI / 4.0);
+    let full_quarter = Mat4::rotation_x(PI / 2.0);
 
     assert_eq!(half_quarter * p, Tuple::point(0.0, 2.0_f32.sqrt() / 2.0, 2.0_f32.sqrt() / 2.0));
     assert_eq!(full_quarter * p, Tuple::point(0.0, 0.0, 1.0));
@@ -895,7 +942,7 @@ mod tests {
   #[test]
   fn test_chained_transformations() {
     let p = Tuple::point(1.0, 0.0, 1.0);
-    let a = Mat4::rotation_x(std::f32::consts::PI / 2.0);
+    let a = Mat4::rotation_x(PI / 2.0);
     let b = Mat4::scaling(5.0, 5.0, 5.0);
     let c = Mat4::translation(10.0, 5.0, 7.0);
 
@@ -917,7 +964,7 @@ mod tests {
     let p = Tuple::point(1.0, 0.0, 1.0);
     let chain =
       Mat4::identity()
-        .rotate_x(std::f32::consts::PI / 2.0)
+        .rotate_x(PI / 2.0)
         .scale(5.0, 5.0, 5.0)
         .translate(10.0, 5.0, 7.0);
 

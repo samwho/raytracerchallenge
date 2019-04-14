@@ -1,5 +1,6 @@
 use super::float;
 use std::ops;
+use std::fmt;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Tuple {
@@ -7,6 +8,12 @@ pub struct Tuple {
   y: f32,
   z: f32,
   w: f32,
+}
+
+impl fmt::Display for Tuple {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({:.2}, {:.2}, {:.2})", self.x, self.y, self.z)
+    }
 }
 
 const ZERO_VECTOR: Tuple = Tuple { x: 0.0, y: 0.0, z: 0.0, w: 0.0 };
