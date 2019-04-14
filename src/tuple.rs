@@ -20,12 +20,12 @@ impl fmt::Display for Tuple {
 const ZERO_VECTOR: Tuple = Tuple { x: 0.0, y: 0.0, z: 0.0, w: 0.0 };
 
 impl Tuple {
-  pub fn new<F: Into<f32>>(x: F, y: F, z: F, w: F) -> Tuple {
+  pub fn new(x: impl Into<f32>, y: impl Into<f32>, z: impl Into<f32>, w: impl Into<f32>) -> Tuple {
     Tuple { x: x.into(), y: y.into(), z: z.into(), w: w.into() }
   }
 
-  pub fn point<F: Into<f32>>(x: F, y: F, z: F) -> Tuple {
-    Tuple::new(x, y, z, 1.0f32)
+  pub fn point(x: impl Into<f32>, y: impl Into<f32>, z: impl Into<f32>) -> Tuple {
+    Tuple::new(x, y, z, 1.0)
   }
 
   pub fn vector(x: f32, y: f32, z: f32) -> Tuple {
