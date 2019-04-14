@@ -171,6 +171,15 @@ impl Mat4 {
     ] }
   }
 
+  pub fn shearing(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Mat4 {
+    Mat4 { matrix: [
+      1.0, xy, xz, 0.0,
+      yx, 1.0, yz, 0.0,
+      zx, zy, 1.0, 0.0,
+      0.0, 0.0, 0.0, 1.0
+    ] }
+  }
+
   pub fn identity() -> Mat4 {
     Mat4::new([
       1.0, 0.0, 0.0, 0.0,
@@ -824,5 +833,46 @@ mod tests {
 
     assert_eq!(half_quarter * p, Tuple::point(0.0, 2.0_f32.sqrt() / 2.0, 2.0_f32.sqrt() / 2.0));
     assert_eq!(full_quarter * p, Tuple::point(0.0, 0.0, 1.0));
+  }
+
+  #[test]
+  fn test_shearing_1() {
+    let transform = Mat4::shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    assert_eq!(transform * p, Tuple::point(5.0, 3.0, 4.0));
+  }
+  #[test]
+  fn test_shearing_2() {
+    let transform = Mat4::shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    assert_eq!(transform * p, Tuple::point(6.0, 3.0, 4.0));
+  }
+
+  #[test]
+  fn test_shearing_3() {
+    let transform = Mat4::shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    assert_eq!(transform * p, Tuple::point(2.0, 5.0, 4.0));
+  }
+
+  #[test]
+  fn test_shearing_4() {
+    let transform = Mat4::shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    assert_eq!(transform * p, Tuple::point(2.0, 7.0, 4.0));
+  }
+
+  #[test]
+  fn test_shearing_5() {
+    let transform = Mat4::shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    assert_eq!(transform * p, Tuple::point(2.0, 3.0, 6.0));
+  }
+
+  #[test]
+  fn test_shearing_6() {
+    let transform = Mat4::shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    assert_eq!(transform * p, Tuple::point(2.0, 3.0, 7.0));
   }
 }
