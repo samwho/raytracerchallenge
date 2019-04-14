@@ -5,6 +5,7 @@ mod float;
 mod color;
 mod canvas;
 mod matrix;
+mod ray;
 
 use matrix::*;
 use tuple::*;
